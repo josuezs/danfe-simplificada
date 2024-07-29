@@ -40,7 +40,7 @@ public class Application {
                 if (lstNfe.isEmpty()) {
                     log.info("No elegible XML found.");
                 } else {
-                    Simplified.generatePdf(lstNfe, true);
+                    new Simplified().generatePdf(lstNfe, true);
                     log.info("Successfully concluded!");
                 }
             } else {

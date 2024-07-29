@@ -23,14 +23,14 @@ class SimplifiedTest {
 
         var nfe = (TNfeProc) XmlUtil.toObject(strData, TNfeProc.class);
 
-        var pdfFile = Simplified.generatePdf(List.of(nfe), true);
+        var pdfFile = new Simplified().generatePdf(List.of(nfe), true);
 
         assertNotNull(strData);
         assertNotNull(pdfFile);
         assertTrue(pdfFile.exists());
     }
 
-    @DisplayName("Given a XML file, must generate a PDF file. After execution, please check the layout by opening the generated PDF file.")
+    @DisplayName("Given multiple XML file, must generate a PDF file. After execution, please check the layout by opening the generated PDF file.")
     @Test
     void validateVisualLayout() throws IOException, JAXBException {
         var file = "/sample-xml-nfe.xml";
@@ -42,7 +42,7 @@ class SimplifiedTest {
         var nfe4 = (TNfeProc) XmlUtil.toObject(strData, TNfeProc.class);
         var nfe5 = (TNfeProc) XmlUtil.toObject(strData, TNfeProc.class);
 
-        var pdfFile = Simplified.generatePdf(List.of(nfe, nfe2, nfe3, nfe4, nfe5), true);
+        var pdfFile = new Simplified().generatePdf(List.of(nfe, nfe2, nfe3, nfe4, nfe5), true);
 
         assertNotNull(strData);
         assertNotNull(pdfFile);

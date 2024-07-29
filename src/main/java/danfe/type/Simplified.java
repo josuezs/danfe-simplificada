@@ -20,6 +20,7 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import danfe.dto.nfev400.TNfeProc;
 import danfe.util.Constants;
+import danfe.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -34,20 +35,9 @@ import static danfe.util.Constants.*;
 @Slf4j
 public class Simplified {
 
-    private static final PdfFont LABEL_FONT;
-    private static final PdfFont TEXT_FONT;
-    private static final PdfFont BARCODE_FONT;
-
-    static {
-        try {
-            LABEL_FONT = PdfFontFactory.createFont(HELVETICA_BOLD);
-            TEXT_FONT = PdfFontFactory.createFont(HELVETICA);
-            BARCODE_FONT = PdfFontFactory.createFont("src/main/resources/fonts/LibreBarcode128-Regular.ttf");
-        } catch (IOException e) {
-            log.error("Error to create HELVETICA font: verify your OS if this font exists.", e);
-            throw new RuntimeException(e);
-        }
-    }
+    private PdfFont labelFont;
+    private PdfFont textFont;
+    private PdfFont barcodeFont;
 
     /**
      * Generate a PDF file with each "DANFE Simplificada" of the XML contents.
@@ -56,9 +46,12 @@ public class Simplified {
      * @return
      * @throws IOException
      */
-    public static File generatePdf(List<TNfeProc> lstNfe, boolean samePage) throws IOException {
+    public File generatePdf(List<TNfeProc> lstNfe, boolean samePage) throws IOException {
         log.info("Starting DANFE generation...");
+        loadFonts();
+
         String fileDestination = "danfe." + Constants.PDF_FORMAT;
+        FileUtils.deleteFile(fileDestination);
 
         Document document = createDocument(fileDestination);
 
@@ -125,6 +118,18 @@ public class Simplified {
         return fPdf;
     }
 
+    private void loadFonts() throws IOException {
+        // Unfortunately, when using static loading of Font files, the itext library generates an exception from the second generation of the PDF.
+        try {
+            labelFont = PdfFontFactory.createFont(HELVETICA_BOLD);
+            textFont = PdfFontFactory.createFont(HELVETICA);
+            barcodeFont = PdfFontFactory.createFont("fonts/LibreBarcode128-Regular.ttf");
+        } catch (IOException e) {
+            log.error("Error to create HELVETICA font: verify your OS if this font exists.", e);
+            throw new IOException(e);
+        }
+    }
+
     private static String getOperationType(String operationType) {
         var description = new StringBuffer(operationType).append(" - ");
         if ("0".equals(operationType)) {
@@ -165,7 +170,7 @@ public class Simplified {
      * @param document
      * @param lstContent Put values in pairs, like key/value (label/text).
      */
-    private static void addLabelAndText(Document document, String... lstContent) {
+    private void addLabelAndText(Document document, String... lstContent) {
         var paragraph = new Paragraph().setMargin(0);
         int idx = 0;
         for (String content : lstContent) {
@@ -175,11 +180,11 @@ public class Simplified {
                     content = "    " + content; // Add extra space between the labels
                 }
                 text = new Text(content)
-                        .setFont(LABEL_FONT)
+                        .setFont(labelFont)
                         .setFontSize(FONT_SIZE);
             } else {
                 text = new Text(" " + content)
-                        .setFont(TEXT_FONT)
+                        .setFont(textFont)
                         .setFontSize(FONT_SIZE);
             }
             paragraph.add(text);
@@ -187,42 +192,42 @@ public class Simplified {
         document.add(paragraph);
     }
 
-    private static void addLabel(Document document, String content) {
+    private void addLabel(Document document, String content) {
         addLabel(document, content, null);
     }
 
-    private static void addLabel(Document document, String content, TextAlignment textAlign) {
+    private void addLabel(Document document, String content, TextAlignment textAlign) {
         Text label = new Text(content)
-                .setFont(LABEL_FONT)
+                .setFont(labelFont)
                 .setFontSize(FONT_SIZE);
         document.add(new Paragraph(label)
                 .setMargin(0)
                 .setTextAlignment(Objects.requireNonNullElse(textAlign, TextAlignment.LEFT)));
     }
 
-    private static void addText(Document document, String content) {
+    private void addText(Document document, String content) {
         Text value = new Text(content)
-                .setFont(TEXT_FONT)
+                .setFont(textFont)
                 .setFontSize(FONT_SIZE);
         document.add(new Paragraph(value)
                 .setMargin(0)
                 .setTextAlignment(TextAlignment.CENTER));
     }
 
-    private static void addBarcode(Document document, String content) {
+    private void addBarcode(Document document, String content) {
         Text value = new Text(content)
-                .setFont(BARCODE_FONT)
+                .setFont(barcodeFont)
                 .setFontSize(18);
         document.add(new Paragraph(value)
                 .setMargin(0)
                 .setTextAlignment(TextAlignment.CENTER));
     }
 
-    private static void addHorizontalLine(Document document) {
+    private void addHorizontalLine(Document document) {
         addHorizontalLine(document, true);
     }
 
-    private static void addHorizontalLine(Document document, boolean isSolid) {
+    private void addHorizontalLine(Document document, boolean isSolid) {
         ILineDrawer line = null;
         if (isSolid) {
             line = new SolidLine(0.5f);

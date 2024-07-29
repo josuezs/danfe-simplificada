@@ -34,4 +34,10 @@ public final class FileUtils {
         return resultStringBuilder.toString();
     }
 
+    public static void deleteFile(String fileName) {
+        var file = new File(fileName);
+        if (file.exists())
+            file.delete();
+    }
+
 }

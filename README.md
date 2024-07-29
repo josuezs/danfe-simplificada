@@ -10,12 +10,15 @@ The layout of this PDF is in accordance with "Technical Note 2020.004" of Brazil
 
 Feel free to collaborate and use it.
 
+If you modify this project, use the "shadow > shadowJar" task and get the new JAR into "build/libs" directory (more information about this plugin see https://gradleup.com/shadow/introduction/).
+
 ## How to use
 
 You can download and compile the project or use the binaries by the steps above:
  - You can download and compile the project or use one of the versions.
  - In the same directory as the JAR, put one or more XML files of the desired NFes.
- - Open a terminal in the directory and run the program: "java danfe-simplificada-X.X.X.jar"
+ - Make sure you are running java 17 or higher.
+ - Open a terminal in the directory and run the program: "java -jar danfe-simplificada-x.x.x-all.jar"
  - Wait of PDF file generation.
 
 ## Thecnical information
@@ -34,10 +37,13 @@ O layout deste PDF está de acordo com a "Nota Técnica 2020.004" das leis brasi
 
 Sinta-se à vontade para colaborar e utilizá-lo.
 
+Se você modificar o projeto, use a task "shadow > shadowJar" e pegue o novo JAR no diretório "build/libs" (mais informações a respeito deste plugin veja https://gradleup.com/shadow/introduction/).
+
 ## Como utilizar
  - Você pode baixar e compilar o projeto ou utilizar uma das releses.
  - No mesmo diretório do JAR coloque um ou mais arquivos XML das NFes desejadas.
- - Abra um terminal no diretório e execute o programa: "java danfe-simplificada-X.X.X.jar"
+ - Certifique-se de estar executando com o java 17 ou superior.
+ - Abra um terminal no diretório e execute o programa: "java -jar danfe-simplificada-x.x.x-all.jar"
  - Aguarde a geração do arquivo PDF.
 
 ## Informações técnicas
