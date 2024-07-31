@@ -1,23 +1,16 @@
 package danfe.type;
 
-import com.itextpdf.kernel.colors.ColorConstants;
-import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.kernel.pdf.canvas.draw.DashedLine;
-import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
-import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.ColumnDocumentRenderer;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.AreaBreak;
-import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
+import danfe.dto.nfev400.TNFe;
 import danfe.dto.nfev400.TNfeProc;
 import danfe.util.Constants;
 import danfe.util.FileUtils;
@@ -29,18 +22,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import static com.itextpdf.io.font.constants.StandardFonts.*;
-import static danfe.util.Constants.*;
+import static com.itextpdf.io.font.constants.StandardFonts.HELVETICA;
+import static com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD;
+import static danfe.util.Constants.DOCUMENT_MARGIN;
 
 @Slf4j
-public class Simplified {
-
-    private PdfFont labelFont;
-    private PdfFont textFont;
-    private PdfFont barcodeFont;
+public class Simplified extends AbstractPdf {
 
     /**
      * Generate a PDF file with each "DANFE Simplificada" of the XML contents.
+     *
      * @param lstNfe
      * @param samePage If <code>false</code> will generate one page per XML.
      * @return
@@ -55,7 +46,7 @@ public class Simplified {
 
         Document document = createDocument(fileDestination);
 
-        for (TNfeProc nfe: lstNfe) {
+        for (TNfeProc nfe : lstNfe) {
             addLabel(document, "DANFE SIMPLIFICADO - ETIQUETA", TextAlignment.CENTER);
 
             addHorizontalLine(document);
@@ -63,7 +54,7 @@ public class Simplified {
             var infProt = nfe.getProtNFe().getInfProt();
             addLabel(document, "CHAVE DE ACESSO:");
             addBarcode(document, infProt.getChNFe());
-            addText(document, infProt.getChNFe());
+            addText(document, infProt.getChNFe(), TextAlignment.CENTER);
 
             addHorizontalLine(document);
             addLabelAndText(document, "PROTOCOLO DE AUTORIZAÇÃO:", infProt.getNProt() + " - " + infProt.getDhRecbto().substring(0, 10));
@@ -75,18 +66,10 @@ public class Simplified {
                     "TIPO OPERAÇÃO:", getOperationType(ide.getTpNF()));
 
             addHorizontalLine(document);
-            var emit = infNfe.getEmit();
-            addLabelAndText(document, "EMITENTE:", emit.getXNome());
-            addLabelAndText(document, "CNPJ:", emit.getCNPJ(),
-                    "IE:", Objects.requireNonNullElse(emit.getIE(), ""),
-                    "UF:", emit.getEnderEmit().getUF().value());
+            putDest(infNfe, document);
 
             addHorizontalLine(document);
-            var dest = infNfe.getDest();
-            addLabelAndText(document, "DESTINATÁRIO:", dest.getXNome());
-            addLabelAndText(document,"CPF/CNPJ:", Objects.requireNonNullElse(dest.getCPF(), dest.getCNPJ()),
-                    "IE:", Objects.requireNonNullElse(dest.getIE(),""),
-                    "UF:", dest.getEnderDest().getUF().value());
+            putEmit(infNfe, document);
 
             addHorizontalLine(document);
             var vICMS = infNfe.getTotal().getICMSTot().getVNF();
@@ -95,7 +78,7 @@ public class Simplified {
 
             if (samePage) {
                 log.debug("Break page (true) or add line (false): {} idx={}", ((lstNfe.indexOf(nfe) + 1) % 2 == 0), lstNfe.indexOf(nfe) + 1);
-                if ( (lstNfe.indexOf(nfe) + 1) % 2 == 0) {
+                if ((lstNfe.indexOf(nfe) + 1) % 2 == 0) {
                     // Every 2 NFes performs a page break in order to jump to the next column.
                     document.add(new AreaBreak());
                 } else {
@@ -130,16 +113,6 @@ public class Simplified {
         }
     }
 
-    private static String getOperationType(String operationType) {
-        var description = new StringBuffer(operationType).append(" - ");
-        if ("0".equals(operationType)) {
-            description.append("Entrada");
-        } else {
-            description.append("Saída");
-        }
-        return description.toString();
-    }
-
     private static Document createDocument(String fileDestination) throws FileNotFoundException {
         // Creation of the document
         PdfWriter writer = new PdfWriter(fileDestination);
@@ -166,78 +139,37 @@ public class Simplified {
         return document;
     }
 
-    /**
-     * @param document
-     * @param lstContent Put values in pairs, like key/value (label/text).
-     */
-    private void addLabelAndText(Document document, String... lstContent) {
-        var paragraph = new Paragraph().setMargin(0);
-        int idx = 0;
-        for (String content : lstContent) {
-            Text text = null;
-            if (++idx % 2 != 0) {
-                if (idx > 1) {
-                    content = "    " + content; // Add extra space between the labels
-                }
-                text = new Text(content)
-                        .setFont(labelFont)
-                        .setFontSize(FONT_SIZE);
-            } else {
-                text = new Text(" " + content)
-                        .setFont(textFont)
-                        .setFontSize(FONT_SIZE);
-            }
-            paragraph.add(text);
-        }
-        document.add(paragraph);
-    }
-
-    private void addLabel(Document document, String content) {
-        addLabel(document, content, null);
-    }
-
-    private void addLabel(Document document, String content, TextAlignment textAlign) {
-        Text label = new Text(content)
-                .setFont(labelFont)
-                .setFontSize(FONT_SIZE);
-        document.add(new Paragraph(label)
-                .setMargin(0)
-                .setTextAlignment(Objects.requireNonNullElse(textAlign, TextAlignment.LEFT)));
-    }
-
-    private void addText(Document document, String content) {
-        Text value = new Text(content)
-                .setFont(textFont)
-                .setFontSize(FONT_SIZE);
-        document.add(new Paragraph(value)
-                .setMargin(0)
-                .setTextAlignment(TextAlignment.CENTER));
-    }
-
-    private void addBarcode(Document document, String content) {
-        Text value = new Text(content)
-                .setFont(barcodeFont)
-                .setFontSize(18);
-        document.add(new Paragraph(value)
-                .setMargin(0)
-                .setTextAlignment(TextAlignment.CENTER));
-    }
-
-    private void addHorizontalLine(Document document) {
-        addHorizontalLine(document, true);
-    }
-
-    private void addHorizontalLine(Document document, boolean isSolid) {
-        ILineDrawer line = null;
-        if (isSolid) {
-            line = new SolidLine(0.5f);
+    private static String getOperationType(String operationType) {
+        var description = new StringBuffer(operationType).append(" - ");
+        if ("0".equals(operationType)) {
+            description.append("Entrada");
         } else {
-            line = new DashedLine(0.5f);
+            description.append("Saída");
         }
-        line.setColor(ColorConstants.BLACK);
-        LineSeparator ls = new LineSeparator(line);
-        ls.setWidth(UnitValue.createPercentValue(100)); // Line width in percentage (based on the document printable area)
-        document.add(ls);
+        return description.toString();
+    }
+
+    private void putDest(TNFe.InfNFe infNfe, Document document) {
+        var dest = infNfe.getDest();
+        var address = dest.getEnderDest();
+        addLabel(document, "DESTINATÁRIO", TextAlignment.CENTER);
+        addLabelAndText(document, "NOME:", dest.getXNome());
+        addLabelAndText(document, "CPF/CNPJ:", Objects.requireNonNullElse(dest.getCPF(), dest.getCNPJ()),
+                "IE:", Objects.requireNonNullElse(dest.getIE(), ""),
+                "UF:", address.getUF().value());
+        addLabelAndText(document, "ENDEREÇO:",
+                String.format("%s, %s - %s", address.getXLgr(), address.getNro(), address.getXCpl()));
+        addText(document,
+                String.format("Bairro: %s - %s/%s", address.getXBairro(), address.getXMun(), address.getUF()));
+    }
+
+    private void putEmit(TNFe.InfNFe infNfe, Document document) {
+        var emit = infNfe.getEmit();
+        addLabel(document, "EMITENTE", TextAlignment.CENTER);
+        addLabelAndText(document, "NOME:", emit.getXNome());
+        addLabelAndText(document, "CNPJ:", emit.getCNPJ(),
+                "IE:", Objects.requireNonNullElse(emit.getIE(), ""),
+                "UF:", emit.getEnderEmit().getUF().value());
     }
 
 }
