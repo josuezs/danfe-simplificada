@@ -24,14 +24,14 @@ public final class FileUtils {
     }
 
     private static String readFromInputStream(InputStream inputStream) throws IOException {
-        StringBuilder resultStringBuilder = new StringBuilder();
+        var result = new StringBuffer();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
-                resultStringBuilder.append(line).append("\n");
+                result.append(line).append("\n");
             }
         }
-        return resultStringBuilder.toString();
+        return result.toString();
     }
 
     public static void deleteFile(String fileName) {

@@ -140,6 +140,7 @@ public class Simplified extends AbstractPdf {
     }
 
     private static String getOperationType(String operationType) {
+        // StringBuilder is faster, but StringBuffer is thread-safe.
         var description = new StringBuffer(operationType).append(" - ");
         if ("0".equals(operationType)) {
             description.append("Entrada");
