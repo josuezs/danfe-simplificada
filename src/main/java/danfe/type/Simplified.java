@@ -154,7 +154,7 @@ public class Simplified extends AbstractPdf {
         var address = dest.getEnderDest();
         addLabel(document, "DESTINATÁRIO", TextAlignment.CENTER);
         addLabelAndText(document, "NOME:", dest.getXNome());
-        addLabelAndText(document, "CPF/CNPJ:", Objects.requireNonNullElse(dest.getCPF(), dest.getCNPJ()),
+        addLabelAndText(document, "CPF/CNPJ:", formatCpfCnpj(Objects.requireNonNullElse(dest.getCPF(), dest.getCNPJ())),
                 "IE:", Objects.requireNonNullElse(dest.getIE(), ""),
                 "UF:", address.getUF().value());
         addLabelAndText(document, "ENDEREÇO:",
@@ -166,8 +166,8 @@ public class Simplified extends AbstractPdf {
     private void putEmit(TNFe.InfNFe infNfe, Document document) {
         var emit = infNfe.getEmit();
         addLabel(document, "EMITENTE", TextAlignment.CENTER);
-        addLabelAndText(document, "NOME:", emit.getXNome());
-        addLabelAndText(document, "CNPJ:", emit.getCNPJ(),
+        addLabelAndText(document, "NOME:", emit.getXFant());
+        addLabelAndText(document, "CNPJ:", formatCpfCnpj(emit.getCNPJ()),
                 "IE:", Objects.requireNonNullElse(emit.getIE(), ""),
                 "UF:", emit.getEnderEmit().getUF().value());
     }

@@ -36,7 +36,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
 
-    // Log implementation
+    // Log implementation (Logback is a replacement for its predecessor, Log4j)
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 

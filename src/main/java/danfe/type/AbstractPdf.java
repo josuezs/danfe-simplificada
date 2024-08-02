@@ -100,4 +100,21 @@ public abstract class AbstractPdf {
         document.add(ls);
     }
 
+    protected String formatCpfCnpj(String content) {
+        if (content != null) {
+            if (content.length() == 11)
+                return content.substring(0, 3) + "." +
+                        content.substring(3, 6) + "." +
+                        content.substring(6, 9) + "-" +
+                        content.substring(9);
+            else if (content.length() == 14)
+                return content.substring(0, 2) + "." +
+                        content.substring(2, 5) + "." +
+                        content.substring(5, 8) + "/" +
+                        content.substring(8, 12) + "-" +
+                        content.substring(12);
+        }
+        return content;
+    }
+
 }
