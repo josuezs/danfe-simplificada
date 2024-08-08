@@ -23,9 +23,22 @@ You can download and compile the project or use the binaries by the steps above:
 
 ## Thecnical information
 
+### Barcode
+
 The Libre Barcode 128 font is best suited for printing 44-position numeric barcodes as it supports the Code 128 format, which is more compact and efficient.
 
 You can download this font at: https://fonts.google.com/specimen/Libre+Barcode+128
+
+### Class generation
+
+We used a XSD that defines the XML structure of an NFe. Based on this XSD we generate the java classes that represent the XML. Then we parse the XML into java objects.
+
+Steps to generate the classes:
+1. Get the XSD at: https://www.nfe.fazenda.gov.br/portal/listaConteudo.aspx?tipoConteudo=BMPFMBoln3w=
+2. Using the below command we generate the java classes and we put them into our project:
+   xjc procNFe_v4.00.xsd -p <our_project_package> -d <target_directory>
+   Example:
+   xjc procNFe_v4.00.xsd -p danfe.dto.nfev40 -d <target_directory>
 
 # PT
 
@@ -48,6 +61,19 @@ Se você modificar o projeto, use a task "shadow > shadowJar" e pegue o novo JAR
 
 ## Informações técnicas
 
+### Código de barras
+
 A fonte Libre Barcode 128 é mais adequada para a impressão de código de barras com 44 posições, pois suporta o formato Code 128, que é mais compacto e eficiente.
 
 Você pode baixar esta fonte em: https://fonts.google.com/specimen/Libre+Barcode+128
+
+### Geração das classes
+
+Foram utilizados os arquivos XSD que definem a estrutura XML de uma NFe. Baseado no XSD nós geramos as classes java que representam o XML. Após nós convertemos o XML nos objetos java.
+
+Passos para a geração das classes:
+1. Obtenha os XSD em: https://www.nfe.fazenda.gov.br/portal/listaConteudo.aspx?tipoConteudo=BMPFMBoln3w=
+2. Usando o comando abaixo nós geramos as classes java e em seguida colocamos elas em nosso projeto:
+   xjc procNFe_v4.00.xsd -p <pacote_do_nosso_projeto> -d <diretório_alvo>
+   Exemplo:
+   xjc procNFe_v4.00.xsd -p danfe.dto.nfev40 -d <diretório_alvo>
