@@ -167,7 +167,7 @@ public class Simplified extends AbstractPdf {
     private void putEmit(TNFe.InfNFe infNfe, Document document) {
         var emit = infNfe.getEmit();
         addLabel(document, "EMITENTE", TextAlignment.CENTER);
-        addLabelAndText(document, "NOME:", emit.getXFant());
+        addLabelAndText(document, "NOME:", Objects.requireNonNullElse(emit.getXFant(), emit.getXNome()));
         addLabelAndText(document, "CNPJ:", formatCpfCnpj(emit.getCNPJ()),
                 "IE:", Objects.requireNonNullElse(emit.getIE(), ""),
                 "UF:", emit.getEnderEmit().getUF().value());
