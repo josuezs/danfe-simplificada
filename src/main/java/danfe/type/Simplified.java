@@ -161,7 +161,7 @@ public class Simplified extends AbstractPdf {
         addLabelAndText(document, "ENDEREÇO:",
                 String.format("%s, %s - %s", address.getXLgr(), address.getNro(), address.getXCpl()));
         addText(document,
-                String.format("Bairro: %s - %s/%s", address.getXBairro(), address.getXMun(), address.getUF()));
+                String.format("Bairro: %s - %s/%s", address.getXBairro(), address.getXMun().toUpperCase(), address.getUF()));
     }
 
     private void putEmit(TNFe.InfNFe infNfe, Document document) {
