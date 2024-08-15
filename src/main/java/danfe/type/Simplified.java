@@ -159,7 +159,10 @@ public class Simplified extends AbstractPdf {
                 "IE:", Objects.requireNonNullElse(dest.getIE(), ""),
                 "UF:", address.getUF().value());
         addLabelAndText(document, "ENDEREÇO:",
-                String.format("%s, %s - %s", address.getXLgr(), address.getNro(), address.getXCpl()));
+                String.format("%s, %s - %s",
+                        address.getXLgr(),
+                        address.getNro(),
+                        Objects.requireNonNullElse(address.getXCpl(), "")));
         addText(document,
                 String.format("Bairro: %s - %s/%s", address.getXBairro(), address.getXMun().toUpperCase(), address.getUF()));
     }
