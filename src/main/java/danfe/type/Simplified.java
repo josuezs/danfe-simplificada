@@ -54,7 +54,7 @@ public class Simplified extends AbstractPdf {
             var infProt = nfe.getProtNFe().getInfProt();
             addLabel(document, "CHAVE DE ACESSO:");
             addBarcode(document, infProt.getChNFe());
-            addText(document, infProt.getChNFe(), TextAlignment.CENTER);
+            addText(document, formatNfeKey(infProt.getChNFe()), TextAlignment.CENTER);
 
             addHorizontalLine(document);
             addLabelAndText(document, "PROTOCOLO DE AUTORIZAÇÃO:", infProt.getNProt() + " - " + infProt.getDhRecbto().substring(0, 10));
@@ -82,10 +82,9 @@ public class Simplified extends AbstractPdf {
                     // Every 2 NFes performs a page break in order to jump to the next column.
                     document.add(new AreaBreak());
                 } else {
-                    // Adds a dashed line between 2 NFes and extra lines.
-                    document.add(new Paragraph("\n"));
+                    // Adds a dashed line between 2 NFes.
                     addHorizontalLine(document, false);
-                    document.add(new Paragraph("\n"));
+                    // document.add(new Paragraph("\n")); // To add extra lines, if needed.
                 }
             } else {
                 // Since we have 2 columns the break jumps to the next column. So, 2 breaks jump the page.

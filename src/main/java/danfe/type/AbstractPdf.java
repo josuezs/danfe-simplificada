@@ -77,10 +77,14 @@ public abstract class AbstractPdf {
     protected void addBarcode(Document document, String content) {
         Text value = new Text(content)
                 .setFont(barcodeFont)
-                .setFontSize(18);
+                .setFontSize(35)
+                .setHorizontalScaling(0.5f);
+        // HorizontalScaling adjusts the width by compressing in the horizontal direction.
         document.add(new Paragraph(value)
                 .setMargin(0)
-                .setTextAlignment(TextAlignment.CENTER));
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFixedLeading(30f));
+        // Barcode add extra spaces, so "FixedLeading" adjusts it.
     }
 
     protected void addHorizontalLine(Document document) {
@@ -115,6 +119,12 @@ public abstract class AbstractPdf {
                         content.substring(12);
         }
         return content;
+    }
+
+    protected String formatNfeKey(String nfeKey) {
+        return nfeKey.replaceAll("(.{4})", "$1 ").trim();
+        // "(.{4})"  Captures any 4 characters sequence.
+        // "$1 "     Replace it with the same string and add a space at the end.
     }
 
 }

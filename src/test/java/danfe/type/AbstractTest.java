@@ -39,4 +39,13 @@ class AbstractTest {
         assertEquals("123456789012", formattedValue2);
     }
 
+    @Test
+    void nfeKeyFormatting() {
+        var nfeKey = "12345678901234567890123456789012345678904444";
+
+        var formattedNfeKey = new Simplified().formatNfeKey(nfeKey);
+
+        assertEquals("1234 5678 9012 3456 7890 1234 5678 9012 3456 7890 4444", formattedNfeKey);
+    }
+
 }
