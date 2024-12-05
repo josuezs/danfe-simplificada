@@ -74,7 +74,7 @@ public class Simplified extends AbstractPdf {
             addHorizontalLine(document);
             var vICMS = infNfe.getTotal().getICMSTot().getVNF();
             // TODO consider adding the ISSQN value here
-            addLabelAndText(document, "VALOR TOTAL DA NOTA:", "R$ " + vICMS.replace(".", ",")); // replace for BRL decimal separator
+            addLabelAndText(document, "VALOR TOTAL DA NOTA:", formatMonetaryValue(vICMS));
 
             if (samePage) {
                 log.debug("Break page (true) or add line (false): {} idx={}", ((lstNfe.indexOf(nfe) + 1) % 2 == 0), lstNfe.indexOf(nfe) + 1);

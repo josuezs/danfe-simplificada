@@ -12,9 +12,11 @@ import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 
+import java.text.NumberFormat;
 import java.util.Objects;
 
 import static danfe.util.Constants.FONT_SIZE;
+import static danfe.util.Constants.LOCALE_PT_BR;
 
 public abstract class AbstractPdf {
 
@@ -127,4 +129,9 @@ public abstract class AbstractPdf {
         // "$1 "     Replace it with the same string and add a space at the end.
     }
 
+    protected String formatMonetaryValue(String amount) {
+        // Format for BRL value, ex: 123456.79 --> R$ 123.456,79
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(LOCALE_PT_BR);
+        return currencyFormatter.format(amount);
+    }
 }

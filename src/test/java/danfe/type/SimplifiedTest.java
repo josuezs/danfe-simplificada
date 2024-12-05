@@ -10,8 +10,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SimplifiedTest {
 
@@ -47,6 +46,20 @@ class SimplifiedTest {
         assertNotNull(strData);
         assertNotNull(pdfFile);
         assertTrue(pdfFile.exists());
+    }
+
+    @Test
+    void formatNfeKey() {
+        var nfeKey = "12345678901234567890123456789012345678904444";
+        var formattedValue = new Simplified().formatNfeKey(nfeKey);
+        assertEquals("1234 5678 9012 3456 7890 1234 5678 9012 3456 7890 4444", formattedValue);
+    }
+
+    @Test
+    void formatMonetaryValue() {
+        var amount = "123456.78";
+        var formattedValue = new Simplified().formatMonetaryValue(amount);
+        assertEquals("R$ 123.456,78", formattedValue);
     }
 
 }
