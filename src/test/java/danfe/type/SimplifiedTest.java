@@ -48,18 +48,4 @@ class SimplifiedTest {
         assertTrue(pdfFile.exists());
     }
 
-    @Test
-    void formatNfeKey() {
-        var nfeKey = "12345678901234567890123456789012345678904444";
-        var formattedValue = new Simplified().formatNfeKey(nfeKey);
-        assertEquals("1234 5678 9012 3456 7890 1234 5678 9012 3456 7890 4444", formattedValue);
-    }
-
-    @Test
-    void formatMonetaryValue() {
-        var amount = "123456.78";
-        var formattedValue = new Simplified().formatMonetaryValue(amount);
-        assertEquals("R$ 123.456,78", formattedValue);
-    }
-
 }

@@ -48,4 +48,17 @@ class AbstractTest {
         assertEquals("1234 5678 9012 3456 7890 1234 5678 9012 3456 7890 4444", formattedNfeKey);
     }
 
+    @Test
+    void formatMonetaryValue() {
+        var amount = "123456.78";
+        var formattedValue = new Simplified().formatMonetaryValue(amount);
+        assertEquals("R$ 123.456,78", formattedValue);
+    }
+
+    @Test
+    void formatMonetaryValue2() {
+        var amount = "199.9";
+        var formattedValue = new Simplified().formatMonetaryValue(amount);
+        assertEquals("R$ 199,90", formattedValue);
+    }
 }

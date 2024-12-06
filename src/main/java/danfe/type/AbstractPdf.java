@@ -12,6 +12,7 @@ import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Objects;
 
@@ -132,6 +133,6 @@ public abstract class AbstractPdf {
     protected String formatMonetaryValue(String amount) {
         // Format for BRL value, ex: 123456.79 --> R$ 123.456,79
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(LOCALE_PT_BR);
-        return currencyFormatter.format(amount);
+        return currencyFormatter.format(new BigDecimal(amount));
     }
 }
