@@ -8,8 +8,8 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.ColumnDocumentRenderer;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.AreaBreak;
-import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.TextAlignment;
+import danfe.config.BusinessConfig;
 import danfe.dto.nfev400.TNFe;
 import danfe.dto.nfev400.TNfeProc;
 import danfe.util.Constants;
@@ -24,6 +24,7 @@ import java.util.Objects;
 
 import static com.itextpdf.io.font.constants.StandardFonts.HELVETICA;
 import static com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD;
+import static danfe.config.BusinessConfig.PARAM_LAYOUT_BREAK;
 import static danfe.util.Constants.DOCUMENT_MARGIN;
 
 @Slf4j
@@ -33,11 +34,10 @@ public class Simplified extends AbstractPdf {
      * Generate a PDF file with each "DANFE Simplificada" of the XML contents.
      *
      * @param lstNfe
-     * @param samePage If <code>false</code> will generate one page per XML.
      * @return
      * @throws IOException
      */
-    public File generatePdf(List<TNfeProc> lstNfe, boolean samePage) throws IOException {
+    public File generatePdf(List<TNfeProc> lstNfe) throws IOException {
         log.info("Starting DANFE generation...");
         loadFonts();
 
@@ -76,19 +76,8 @@ public class Simplified extends AbstractPdf {
             // TODO consider adding the ISSQN value here
             addLabelAndText(document, "VALOR TOTAL DA NOTA:", formatMonetaryValue(vICMS));
 
-            if (samePage) {
-                log.debug("Break page (true) or add line (false): {} idx={}", ((lstNfe.indexOf(nfe) + 1) % 2 == 0), lstNfe.indexOf(nfe) + 1);
-                if ((lstNfe.indexOf(nfe) + 1) % 2 == 0) {
-                    // Every 2 NFes performs a page break in order to jump to the next column.
-                    document.add(new AreaBreak());
-                } else {
-                    // Adds a dashed line between 2 NFes.
-                    addHorizontalLine(document, false);
-                    // document.add(new Paragraph("\n")); // To add extra lines, if needed.
-                }
-            } else {
-                // Since we have 2 columns the break jumps to the next column. So, 2 breaks jump the page.
-                document.add(new AreaBreak()).add(new AreaBreak());
+            if (lstNfe.indexOf(nfe) < lstNfe.size() - 1) {
+                addBreakLayout(lstNfe, nfe, document);
             }
         }
 
@@ -98,6 +87,28 @@ public class Simplified extends AbstractPdf {
         var fPdf = new File(fileDestination);
         log.info("DANFE successfully created at: {}", fPdf.getAbsolutePath());
         return fPdf;
+    }
+
+    private void addBreakLayout(List<TNfeProc> lstNfe, TNfeProc nfe, Document document) {
+        log.debug("Break layout config: {}", BusinessConfig.get(PARAM_LAYOUT_BREAK));
+        if ("1".equals(BusinessConfig.get(PARAM_LAYOUT_BREAK))) {
+            // Jump the next column.
+            document.add(new AreaBreak());
+        } else if ("2".equals(BusinessConfig.get(PARAM_LAYOUT_BREAK))) {
+            // Since we have 2 columns the break jumps to the next column. So, 2 breaks jump the page.
+            document.add(new AreaBreak()).add(new AreaBreak());
+        } else {
+            log.debug("Break page (true) or add line (false): {} idx={}", ((lstNfe.indexOf(nfe) + 1) % 2 == 0), lstNfe.indexOf(nfe) + 1);
+            // Without jump (only when it reaches the end of the sheet).
+            if ((lstNfe.indexOf(nfe) + 1) % 2 == 0) {
+                // Every 2 NFes performs a page break in order to jump to the next column.
+                document.add(new AreaBreak());
+            } else {
+                // Adds a dashed line between 2 NFes.
+                addHorizontalLine(document, false);
+                // document.add(new Paragraph("\n")); // To add extra lines, if needed.
+            }
+        }
     }
 
     private void loadFonts() throws IOException {

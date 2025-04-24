@@ -1,5 +1,6 @@
 package danfe;
 
+import danfe.config.BusinessConfig;
 import danfe.dto.nfev400.TNfeProc;
 import danfe.type.Simplified;
 import danfe.util.FileUtils;
@@ -18,6 +19,8 @@ public class Application {
     public static void main(String[] args) {
         log.info("Starting...");
         try {
+            BusinessConfig.loadConfigurations(args);
+
             var currentDir = new File(".");
             FilenameFilter xmlFilter = (dir, name) -> name.toLowerCase().endsWith("." + XML_FORMAT);
 
@@ -31,7 +34,7 @@ public class Application {
                 if (lstNfe.isEmpty()) {
                     log.info("No elegible XML found.");
                 } else {
-                    new Simplified().generatePdf(lstNfe, true);
+                    new Simplified().generatePdf(lstNfe);
                     log.info("Successfully concluded!");
                 }
             } else {

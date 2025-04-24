@@ -22,7 +22,7 @@ class SimplifiedTest {
 
         var nfe = (TNfeProc) XmlUtil.toObject(strData, TNfeProc.class);
 
-        var pdfFile = new Simplified().generatePdf(List.of(nfe), true);
+        var pdfFile = new Simplified().generatePdf(List.of(nfe));
 
         assertNotNull(strData);
         assertNotNull(pdfFile);
@@ -41,7 +41,7 @@ class SimplifiedTest {
         var nfe4 = (TNfeProc) XmlUtil.toObject(strData, TNfeProc.class);
         var nfe5 = (TNfeProc) XmlUtil.toObject(strData, TNfeProc.class);
 
-        var pdfFile = new Simplified().generatePdf(List.of(nfe, nfe2, nfe3, nfe4, nfe5), true);
+        var pdfFile = new Simplified().generatePdf(List.of(nfe, nfe2, nfe3, nfe4, nfe5));
 
         assertNotNull(strData);
         assertNotNull(pdfFile);

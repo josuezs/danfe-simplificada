@@ -40,6 +40,10 @@ Steps to generate the classes:
    Example:
    xjc procNFe_v4.00.xsd -p danfe.dto.nfev40 -d <target_directory>
 
+### Build
+
+To generate the executable JAR, run the _shadowJar_ task and get the JAR file inside _build/libs_ folder.
+
 # PT
 
 ## Sobre este projeto
@@ -77,3 +81,7 @@ Passos para a geração das classes:
    xjc procNFe_v4.00.xsd -p <pacote_do_nosso_projeto> -d <diretório_alvo>
    Exemplo:
    xjc procNFe_v4.00.xsd -p danfe.dto.nfev40 -d <diretório_alvo>
+
+### Build
+
+Para gerar o JAR executável, rode a task _shadowJar_ e pegue o JAR gerado dentro da pasta _build/libs_.
