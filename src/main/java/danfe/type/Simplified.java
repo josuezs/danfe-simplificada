@@ -162,19 +162,37 @@ public class Simplified extends AbstractPdf {
 
     private void putDest(TNFe.InfNFe infNfe, Document document) {
         var dest = infNfe.getDest();
-        var address = dest.getEnderDest();
         addLabel(document, "DESTINATÁRIO", TextAlignment.CENTER);
         addLabelAndText(document, "NOME:", dest.getXNome());
         addLabelAndText(document, "CPF/CNPJ:", formatCpfCnpj(Objects.requireNonNullElse(dest.getCPF(), dest.getCNPJ())),
                 "IE:", Objects.requireNonNullElse(dest.getIE(), ""),
-                "UF:", address.getUF().value());
+                "UF:", dest.getEnderDest().getUF().value());
+
+        // TODO create an interface to do that!
+        var address = infNfe.getDest().getEnderDest();
+        var streetName = address.getXLgr();
+        var number = address.getNro();
+        var streetComplement = address.getXCpl();
+        var neighborhood = address.getXBairro();
+        var city = address.getXMun();
+        var stateAcronym = address.getUF();
+
+        var shipping = infNfe.getEntrega();
+        if (shipping != null) {
+            streetName = shipping.getXLgr();
+            number = shipping.getNro();
+            streetComplement = shipping.getXCpl();
+            neighborhood = shipping.getXBairro();
+            city = shipping.getXMun();
+            stateAcronym = shipping.getUF();
+        }
         addLabelAndText(document, "ENDEREÇO:",
                 String.format("%s, %s - %s",
-                        address.getXLgr(),
-                        address.getNro(),
-                        Objects.requireNonNullElse(address.getXCpl(), "")));
+                        streetName,
+                        number,
+                        Objects.requireNonNullElse(streetComplement, "")));
         addText(document,
-                String.format("Bairro: %s - %s/%s", address.getXBairro(), address.getXMun().toUpperCase(), address.getUF()));
+                String.format("Bairro: %s - %s/%s", neighborhood, city.toUpperCase(), stateAcronym));
     }
 
     private void putEmit(TNFe.InfNFe infNfe, Document document) {
