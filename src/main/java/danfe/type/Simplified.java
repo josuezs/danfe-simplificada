@@ -196,7 +196,8 @@ public class Simplified extends AbstractPdf {
         var showPhone = Objects.requireNonNullElse(BusinessConfig.get(PARAM_SHOW_CUSTOMER_PHONE), "").trim().isEmpty()
                 || "1".equals(BusinessConfig.get(PARAM_SHOW_CUSTOMER_PHONE));
         if (showPhone && !Objects.requireNonNullElse(phoneNumber, "").trim().isEmpty()) {
-            addTextWithBackground(document, phoneNumber, new Integer[]{255, 255, 0});
+            // Add text with yellow background --> RGB(255, 255, 0)
+            addTextWithBackground(document, formatPhoneNumber(phoneNumber), new Integer[]{255, 255, 0});
         }
 
         addLabelAndText(document, "CPF/CNPJ:", formatCpfCnpj(Objects.requireNonNullElse(dest.getCPF(), dest.getCNPJ())),
@@ -207,10 +208,10 @@ public class Simplified extends AbstractPdf {
                 String.format("%s, %s - %s",
                         streetName,
                         number,
-                        Objects.requireNonNullElse(streetComplement, "")));
-        addLabelAndText(document,
-                "", String.format("Bairro: %s - %s/%s", neighborhood, city.toUpperCase(), stateAcronym),
-                "CEP", postalCode);
+                        Objects.requireNonNullElse(streetComplement, "")),
+                "Bairro:", neighborhood,
+                "Cidade:", String.format("%s/%s", city.toUpperCase(), stateAcronym),
+                "CEP:", formatPostalCode(postalCode));
     }
 
     private void putEmit(TNFe.InfNFe infNfe, Document document) {

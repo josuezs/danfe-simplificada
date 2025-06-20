@@ -147,4 +147,24 @@ public abstract class AbstractPdf {
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(LOCALE_PT_BR);
         return currencyFormatter.format(new BigDecimal(amount));
     }
+
+    protected String formatPostalCode(String postalCode) {
+        return postalCode.replaceAll("(.{5})", "$1-").trim();
+        // Format: 99999-999
+        // "(.{5})"  Captures thie first 5 characters sequence.
+        // "$1-"     Replace it with the same string and add '-' at the end.
+    }
+
+    protected String formatPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.length() < 11) {
+            return phoneNumber;
+        }
+
+        String ddd = phoneNumber.substring(0, 2);
+        String part1 = phoneNumber.substring(2, 7);
+        String part2 = phoneNumber.substring(7);
+
+        return String.format("(%s) %s-%s", ddd, part1, part2);
+    }
+
 }
