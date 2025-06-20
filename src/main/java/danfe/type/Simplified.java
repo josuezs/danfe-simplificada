@@ -209,8 +209,10 @@ public class Simplified extends AbstractPdf {
                         streetName,
                         number,
                         Objects.requireNonNullElse(streetComplement, "")),
-                "Bairro:", neighborhood,
-                "Cidade:", String.format("%s/%s", city.toUpperCase(), stateAcronym),
+                "Bairro:", neighborhood);
+
+        addLabelAndText(document,
+                "", String.format("%s/%s", city.toUpperCase(), stateAcronym),
                 "CEP:", formatPostalCode(postalCode));
     }
 
