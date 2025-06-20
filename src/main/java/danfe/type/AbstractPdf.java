@@ -1,6 +1,7 @@
 package danfe.type;
 
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.pdf.canvas.draw.DashedLine;
 import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
@@ -69,12 +70,23 @@ public abstract class AbstractPdf {
     }
 
     protected void addText(Document document, String content, TextAlignment textAlign) {
+        addText(document, content, textAlign, null);
+    }
+
+    protected void addText(Document document, String content, TextAlignment textAlign, Integer[] rgb) {
         Text value = new Text(content)
                 .setFont(textFont)
                 .setFontSize(FONT_SIZE);
+        if (rgb != null && rgb.length == 3) {
+            value.setBackgroundColor(new DeviceRgb(rgb[0], rgb[1], rgb[2]));
+        }
         document.add(new Paragraph(value)
                 .setMargin(0)
                 .setTextAlignment(Objects.requireNonNullElse(textAlign, TextAlignment.LEFT)));
+    }
+
+    protected void addTextWithBackground(Document document, String content, Integer[] rgb) {
+        addText(document, content, null, rgb);
     }
 
     protected void addBarcode(Document document, String content) {

@@ -13,6 +13,17 @@ public class BusinessConfig {
      * Configure to 0-Without break, 1-Break column or 2-Break page.
      */
     public static final String PARAM_LAYOUT_BREAK = "layout-break";
+
+    /**
+     * Configure to show invoice total (default is No): 0-No, 1-Yes
+     */
+    public static final String PARAM_SHOW_INVOICE_TOTAL = "show-invoice-total";
+
+    /**
+     * Configure to show customer phone (default is Yes): 0-No, 1-Yes
+     */
+    public static final String PARAM_SHOW_CUSTOMER_PHONE = "show-customer-phone";
+
     private static final Map<String, String> parameters = new HashMap<>();
 
     public static void loadConfigurations(String[] args) {

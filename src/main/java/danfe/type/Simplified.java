@@ -24,7 +24,7 @@ import java.util.Objects;
 
 import static com.itextpdf.io.font.constants.StandardFonts.HELVETICA;
 import static com.itextpdf.io.font.constants.StandardFonts.HELVETICA_BOLD;
-import static danfe.config.BusinessConfig.PARAM_LAYOUT_BREAK;
+import static danfe.config.BusinessConfig.*;
 import static danfe.util.Constants.DOCUMENT_MARGIN;
 
 @Slf4j
@@ -72,9 +72,12 @@ public class Simplified extends AbstractPdf {
             putEmit(infNfe, document);
 
             addHorizontalLine(document);
-            var vICMS = infNfe.getTotal().getICMSTot().getVNF();
-            // TODO consider adding the ISSQN value here
-            addLabelAndText(document, "VALOR TOTAL DA NOTA:", formatMonetaryValue(vICMS));
+
+            if ("1".equals(BusinessConfig.get(PARAM_SHOW_INVOICE_TOTAL))) {
+                var vICMS = infNfe.getTotal().getICMSTot().getVNF();
+                // TODO consider adding the ISSQN value here
+                addLabelAndText(document, "VALOR TOTAL DA NOTA:", formatMonetaryValue(vICMS));
+            }
 
             if (lstNfe.indexOf(nfe) < lstNfe.size() - 1) {
                 addBreakLayout(lstNfe, nfe, document);
@@ -162,20 +165,17 @@ public class Simplified extends AbstractPdf {
 
     private void putDest(TNFe.InfNFe infNfe, Document document) {
         var dest = infNfe.getDest();
-        addLabel(document, "DESTINATÁRIO", TextAlignment.CENTER);
-        addLabelAndText(document, "NOME:", dest.getXNome());
-        addLabelAndText(document, "CPF/CNPJ:", formatCpfCnpj(Objects.requireNonNullElse(dest.getCPF(), dest.getCNPJ())),
-                "IE:", Objects.requireNonNullElse(dest.getIE(), ""),
-                "UF:", dest.getEnderDest().getUF().value());
 
         // TODO create an interface to do that!
-        var address = infNfe.getDest().getEnderDest();
+        var address = dest.getEnderDest();
         var streetName = address.getXLgr();
         var number = address.getNro();
         var streetComplement = address.getXCpl();
         var neighborhood = address.getXBairro();
         var city = address.getXMun();
         var stateAcronym = address.getUF();
+        var postalCode = address.getCEP();
+        var phoneNumber = address.getFone();
 
         var shipping = infNfe.getEntrega();
         if (shipping != null) {
@@ -185,14 +185,32 @@ public class Simplified extends AbstractPdf {
             neighborhood = shipping.getXBairro();
             city = shipping.getXMun();
             stateAcronym = shipping.getUF();
+            postalCode = shipping.getCEP();
+            phoneNumber = shipping.getFone();
         }
+
+        addLabel(document, "DESTINATÁRIO", TextAlignment.CENTER);
+        addLabelAndText(document, "NOME:", dest.getXNome());
+
+        // TODO add apache commons lang library to validate empty config/phoneNumber
+        var showPhone = Objects.requireNonNullElse(BusinessConfig.get(PARAM_SHOW_CUSTOMER_PHONE), "").trim().isEmpty()
+                || "1".equals(BusinessConfig.get(PARAM_SHOW_CUSTOMER_PHONE));
+        if (showPhone && !Objects.requireNonNullElse(phoneNumber, "").trim().isEmpty()) {
+            addTextWithBackground(document, phoneNumber, new Integer[]{255, 255, 0});
+        }
+
+        addLabelAndText(document, "CPF/CNPJ:", formatCpfCnpj(Objects.requireNonNullElse(dest.getCPF(), dest.getCNPJ())),
+                "IE:", Objects.requireNonNullElse(dest.getIE(), ""),
+                "UF:", dest.getEnderDest().getUF().value());
+
         addLabelAndText(document, "ENDEREÇO:",
                 String.format("%s, %s - %s",
                         streetName,
                         number,
                         Objects.requireNonNullElse(streetComplement, "")));
-        addText(document,
-                String.format("Bairro: %s - %s/%s", neighborhood, city.toUpperCase(), stateAcronym));
+        addLabelAndText(document,
+                "", String.format("Bairro: %s - %s/%s", neighborhood, city.toUpperCase(), stateAcronym),
+                "CEP", postalCode);
     }
 
     private void putEmit(TNFe.InfNFe infNfe, Document document) {
